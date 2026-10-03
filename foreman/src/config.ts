@@ -281,8 +281,9 @@ usage: npm run start -- [options]
 
  claude backend
   auth: ANTHROPIC_API_KEY, or a cloud provider (CLAUDE_CODE_USE_BEDROCK / _VERTEX / _FOUNDRY)
-  --use-claude-login       use your local \`claude\` CLI login instead (personal use only; env
-                           AGENTCRAFT_USE_CLAUDE_LOGIN=1, config.json claude.useClaudeLogin)
+  --use-claude-login       use your claude.ai subscription (the local \`claude\` CLI login) instead;
+                           personal use only. ANTHROPIC_API_KEY and provider switches are ignored
+                           then. env AGENTCRAFT_USE_CLAUDE_LOGIN=1, config.json claude.useClaudeLogin
   --model <m>              model for lead and workers (default lead: opus, workers: sonnet)
   --lead-model <m> / --worker-model <m>
   --effort low|medium|high|xhigh|max   (default medium)

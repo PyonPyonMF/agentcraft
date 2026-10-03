@@ -31,7 +31,8 @@ npm install
 
 # real agents: needs ANTHROPIC_API_KEY (or CLAUDE_CODE_USE_BEDROCK / _VERTEX / _FOUNDRY)
 npm run start -- --backend claude --repo C:\path\to\your\repo
-# personal use only: your local `claude` CLI login instead of an API key
+# personal use only: your claude.ai subscription (run `claude` and /login once) instead of an API key.
+# ANTHROPIC_API_KEY and provider switches in your shell are ignored in this mode, so nothing bills the API.
 npm run start -- --backend claude --repo C:\path\to\your\repo --use-claude-login
 
 # simulated team on a fresh sandbox repo (no API calls) - for demos and screenshot QA

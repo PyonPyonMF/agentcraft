@@ -17,7 +17,24 @@ describe('detectApiAuth', () => {
   it('drops the claude.ai login token from agent processes unless opted in', () => {
     const env = { CLAUDE_CODE_OAUTH_TOKEN: 'oauth', ANTHROPIC_API_KEY: 'k' };
     expect(withAuthMode(env, false)).toEqual({ ANTHROPIC_API_KEY: 'k' });
-    expect(withAuthMode(env, true)).toEqual(env);
+    expect(withAuthMode(env, true)).toEqual({ CLAUDE_CODE_OAUTH_TOKEN: 'oauth' });
+  });
+
+  it('with the claude.ai login, drops every credential that would outrank the subscription', () => {
+    // the CLI prefers a cloud provider, ANTHROPIC_AUTH_TOKEN and ANTHROPIC_API_KEY over the login;
+    // a base URL would send the login token to another host
+    const env = {
+      ANTHROPIC_API_KEY: 'k',
+      ANTHROPIC_AUTH_TOKEN: 't',
+      ANTHROPIC_BASE_URL: 'https://gw',
+      CLAUDE_CODE_USE_BEDROCK: '1',
+      CLAUDE_CODE_USE_VERTEX: '1',
+      CLAUDE_CODE_USE_FOUNDRY: '1',
+      CLAUDE_CODE_USE_ANTHROPIC_AWS: '1',
+      PATH: '/usr/bin',
+    };
+    expect(withAuthMode(env, true)).toEqual({ PATH: '/usr/bin' });
+    expect(env.ANTHROPIC_API_KEY).toBe('k'); // the input is not mutated
   });
 });
 
