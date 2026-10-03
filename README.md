@@ -20,11 +20,11 @@
 
 Multi-agent coding usually means a wall of terminal text. AgentCraft turns it into a place.
 
-You type a goal. A lead agent reads your repo, writes a plan and pins tasks to a wall. Workers walk to
+You type a goal. A lead agent reads your project folder (a git repo, or just a folder, even an empty one), writes a plan and pins tasks to a wall. Workers walk to
 their desks, sit down and start coding in their own git worktrees while their monitors stream every
 file they read and every line they change. When a call is genuinely yours, an agent walks over to
 you with a question. When work is ready, you review the real diff and press **Merge**. Nothing
-touches your branch without that click, and nothing is ever pushed.
+touches your project without that click, and nothing is ever pushed.
 
 Close the game and the agents keep working. Open it again and the studio catches up.
 
@@ -160,12 +160,18 @@ AgentCraft is built to point at code you care about.
   (writing outside it, network access, destructive commands) becomes an in game permission prompt
   that shows exactly what "Always allow" would cover.
 - **Clear authorship.** Agents commit as `AgentCraft <Name>`. Only the merge you approve is made as you.
+- **Any folder works, git or not.** Point AgentCraft at an empty folder, a folder with files, or a git
+  repo with no commits yet, as you would start Claude Code in a new directory. It never creates a
+  `.git` in your folder and never makes a commit in your own repo: agents work on a private copy
+  kept under `~/.agentcraft`, and the merge you approve writes the files into your folder. Details:
+  [Folder mode](foreman/README.md#folder-mode-no-git-needed).
 
 <br>
 
 ## Quick start
 
-**You need:** Windows 10 or 11, or macOS, Java 25, Node 22+, git, and a copy of
+**You need:** Windows 10 or 11, or macOS, Java 25, Node 22+, the `git` program (AgentCraft uses it
+internally; the folder you work in does not need to be a git repo), and a copy of
 Minecraft: Java Edition.
 
 **For the real agents** you need Claude API access, either of these:
@@ -183,7 +189,8 @@ git clone https://github.com/blendi-remade/agentcraft
 cd agentcraft
 
 tools\launch.ps1 -Backend sim                    # try it first: a simulated team, no API usage
-tools\launch.ps1 -Repo C:\path\to\your\repo      # real agents on your repo
+tools\launch.ps1 -Repo C:\path\to\your\repo      # real agents on your repo (git or not)
+tools\launch.ps1 -Repo C:\code\new-idea           # or on an empty folder: describe the program, they build it
 tools\stop.ps1                                   # stop everything launch.ps1 started
 ```
 
@@ -193,7 +200,7 @@ On macOS, install Java 25 with `brew install openjdk@25`, then run from the chec
 ```sh
 node tools/mac.mjs launch --backend sim                 # try the studio without API usage
 node tools/mac.mjs stop --profile sim
-node tools/mac.mjs launch --repo /path/to/your/repo --use-claude-login
+node tools/mac.mjs launch --repo /path/to/your/repo --use-claude-login   # any existing folder works
 node tools/mac.mjs stop
 ```
 
@@ -241,7 +248,7 @@ All keys can be rebound in Options, Controls.
 | `/status` | Goal, agents, tasks, decisions and spend |
 | `/pause @x`, `/resume @x` | Pause an agent, keeping its task |
 | `/stop @x`, `/spawn @x [task]` | Take an agent off shift, or bring one on |
-| `/repo add <path>`, `/repos` | Register and list repos |
+| `/repo add <path>`, `/repos` | Register (any existing folder) and list project folders |
 | `/help` | Everything else |
 
 <br>
@@ -259,7 +266,7 @@ flowchart LR
         State["Task graph, messages,<br/>memory, decisions"]
         Git["Worktrees, diffs,<br/>approved merges"]
     end
-    Repo[("Your git repo")]
+    Repo[("Your project folder<br/>(git repo or plain folder)")]
     game <-->|"WebSocket, localhost only"| foreman
     Team --> Git --> Repo
 ```
