@@ -18,6 +18,14 @@ export const PROVIDER_SWITCHES: Record<string, string> = {
 /** Variables that carry a claude.ai (subscription) login into the CLI; removed unless opted in. */
 export const CLAUDE_LOGIN_VARS = ['CLAUDE_CODE_OAUTH_TOKEN'];
 
+/**
+ * Variables that make the CLI use API billing instead of the claude.ai login; removed with
+ * --use-claude-login. The CLI ranks a cloud provider, ANTHROPIC_AUTH_TOKEN and ANTHROPIC_API_KEY above
+ * the subscription login, so one stray key in the shell would bill the API while the banner says
+ * "subscription". ANTHROPIC_BASE_URL goes too: the login token must only reach Anthropic.
+ */
+export const API_AUTH_VARS = ['ANTHROPIC_API_KEY', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_BASE_URL', ...Object.keys(PROVIDER_SWITCHES)];
+
 export type ApiAuth = { ok: true; source: string } | { ok: false };
 
 const truthy = (v: string | undefined) => !!v && v !== '0' && v.toLowerCase() !== 'false';
@@ -31,17 +39,18 @@ export function detectApiAuth(env: NodeJS.ProcessEnv = process.env): ApiAuth {
 }
 
 /**
- * The environment for agent CLI processes: in API mode, no claude.ai login token is passed on (the
- * CLI then authenticates with the key/provider); with --use-claude-login it is left untouched.
+ * The environment for agent CLI processes. API mode: no claude.ai login token is passed on (the CLI
+ * then authenticates with the key/provider). --use-claude-login: no API key, gateway or provider
+ * switch is passed on (the CLI then uses the stored login, or CLAUDE_CODE_OAUTH_TOKEN).
  */
 export function withAuthMode(env: Record<string, string | undefined>, useClaudeLogin: boolean): Record<string, string | undefined> {
-  if (useClaudeLogin) return env;
   const out = { ...env };
-  for (const k of CLAUDE_LOGIN_VARS) delete out[k];
+  for (const k of useClaudeLogin ? API_AUTH_VARS : CLAUDE_LOGIN_VARS) delete out[k];
   return out;
 }
 
 export const NO_API_AUTH_MESSAGE =
   'No Claude API key. Set ANTHROPIC_API_KEY (from console.anthropic.com) or a cloud provider ' +
   '(CLAUDE_CODE_USE_BEDROCK / _VERTEX / _FOUNDRY), then restart the Foreman. For your own personal ' +
-  'use only, --use-claude-login uses your claude.ai login instead. The sim backend works without either.';
+  'use only, --use-claude-login uses your claude.ai subscription instead (run `claude` and /login ' +
+  'once). The sim backend works without either.';

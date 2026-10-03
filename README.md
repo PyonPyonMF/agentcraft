@@ -207,7 +207,9 @@ takes a few minutes. After that, a launch reaches the studio in under a minute. 
 the first time; in an older world, rebuild it with `/agentcraft hq`.
 
 > **Personal use with Claude Code.** If you already use Claude Code, `tools\launch.ps1 -UseClaudeLogin`
-> runs the agents on your own `claude` CLI login instead of an API key. Anthropic does not allow
+> runs the agents on your own claude.ai subscription (the `claude` CLI login; run `claude` and
+> `/login` once) instead of an API key. `ANTHROPIC_API_KEY` and cloud-provider switches in your shell
+> are ignored in this mode, so nothing bills the API by accident. Anthropic does not allow
 > third party tools to offer claude.ai login to their users, so this is off by default and meant for
 > running AgentCraft yourself. To make it permanent for yourself, put
 > `{"claude": {"useClaudeLogin": true}}` in `~/.agentcraft/config.json`.
