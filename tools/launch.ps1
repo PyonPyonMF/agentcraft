@@ -15,7 +15,7 @@
 
 .EXAMPLE
   tools\launch.ps1                                     # claude backend (needs ANTHROPIC_API_KEY), ~/.agentcraft, ports 7878/7879
-  tools\launch.ps1 -Repo C:\code\life-tracker          # register a repo with the Foreman
+  tools\launch.ps1 -Repo C:\code\life-tracker          # work in this folder (a git repo, or any folder, even an empty one)
   tools\launch.ps1 -UseClaudeLogin                     # personal use: your `claude` CLI login instead of an API key
   tools\launch.ps1 -Backend sim                        # scripted demo team, no API calls
   tools\launch.ps1 -Showcase late                      # static showcase state (sim)
@@ -111,7 +111,7 @@ foreach ($r in @($Repo | Where-Object { $_ })) {
     foreach ($part in ($r -split ',')) {
         if (-not $part.Trim()) { continue }
         $full = Resolve-FullPath $part.Trim()
-        if (-not (Test-Path (Join-Path $full '.git'))) { Fail "-Repo $full is not a git repository root" }
+        if (-not (Test-Path -LiteralPath $full -PathType Container)) { Fail "-Repo $full is not an existing folder" }
         $repoPaths += $full
     }
 }
